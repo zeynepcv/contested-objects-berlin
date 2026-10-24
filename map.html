@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Map · Contested Objects</title>
+  <link rel="icon" href="seal.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root { --paper: #f6f3ee; --ink: #1f1f1f; --muted: #6b6b6b; --line: #ddd6cb; --accent: #8a1c1c; --green: #2e6b3a; --grey: #5a5a5a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Georgia, serif; background: #fff; color: var(--ink); }
+    header { padding: 1.4rem 1.5rem 0.8rem; max-width: 1100px; }
+    .kicker { font-family: Helvetica, Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+    h1 { font-size: clamp(1.5rem, 3vw, 2.2rem); margin: 0.3rem 0 0.5rem; }
+    header p { margin: 0 0 0.5rem; max-width: 760px; line-height: 1.55; color: #3a3a3a; }
+    header a { color: var(--accent); }
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; padding: 0 1.5rem 0.8rem; font-family: Helvetica, Arial, sans-serif; font-size: 0.8rem; }
+    .legend span::before { content: ""; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--c); margin-right: 6px; vertical-align: 3px; }
+    .legend span.dash::before { border-top-style: dashed; }
+    #map { height: calc(100vh - 210px); min-height: 440px; border-top: 1px solid var(--line); }
+    .popup { width: 240px; }
+    .popup img { width: 100%; height: 140px; object-fit: contain; background: #eee8df; display: block; margin-bottom: 0.4rem; }
+    .popup h3 { margin: 0 0 0.2rem; font-size: 1rem; }
+    .popup .route { font-family: Helvetica, Arial, sans-serif; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.3rem; }
+    .popup .status { font-family: Helvetica, Arial, sans-serif; font-size: 0.68rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; padding: 0.15rem 0.4rem; border-radius: 3px; display: inline-block; }
+    .popup a { color: var(--accent); font-size: 0.8rem; }
+    footer { padding: 0.6rem 1.5rem; font-size: 0.75rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html"><img src="logo.png" alt="Contested Objects" style="width:100%;max-width:420px;display:block"></a>
+    <h1>All roads lead to Berlin</h1>
+    <p>Each line connects an object's place of origin with the Berlin museum that holds it today. Click a line or a dot for the object's story. <a href="index.html">← Back to the exhibition</a></p>
+  </header>
+  <div class="legend">
+    <span style="--c:#8a1c1c">Return requested</span>
+    <span style="--c:#5a5a5a">No formal claim / contested provenance</span>
+    <span class="dash" style="--c:#2e6b3a">Returned, return agreed or ownership transferred</span>
+  </div>
+  <div id="map"></div>
+  <footer>Map data © OpenStreetMap contributors · Built with Leaflet · Photos from Wikimedia Commons (credits in the exhibition) · Created by Zeynep Canan Vural for LV 14141, FU Berlin. Code written with assistance from Claude (Anthropic).</footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const statusColor = s =>
+      s === "Return requested" ? "#8a1c1c" :
+      (s === "Returned" || s === "Return agreed" || s === "Ownership transferred") ? "#2e6b3a" : "#5a5a5a";
+
+    const map = L.map("map", { worldCopyJump: true }).setView([25, 25], 3);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // A gently curved line between two points, so overlapping routes stay readable
+    function arc(a, b, bend) {
+      const pts = [];
+      const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      const dx = b[1] - a[1], dy = b[0] - a[0];
+      const ctrl = [mid[0] + dx * bend, mid[1] - dy * bend];
+      for (let t = 0; t <= 1.0001; t += 0.05) {
+        const u = 1 - t;
+        pts.push([u*u*a[0] + 2*u*t*ctrl[0] + t*t*b[0], u*u*a[1] + 2*u*t*ctrl[1] + t*t*b[1]]);
+      }
+      return pts;
+    }
+
+    fetch("data.json")
+      .then(r => r.json())
+      .then(rows => {
+        const layers = [];
+        L.circleMarker([52.52, 13.40], { radius: 11, color: "#fff", weight: 3, fillColor: "#1f1f1f", fillOpacity: 1 })
+          .addTo(map).bindTooltip("Berlin", { permanent: true, direction: "right", offset: [10, 0] });
+
+        rows.forEach((o, i) => {
+          const from = [+o.OriginLat, +o.OriginLng];
+          const to = [+o.BerlinLat, +o.BerlinLng];
+          const c = statusColor(o.Status);
+          const returned = o.Status === "Returned";
+          const html = `<div class="popup">
+              <img src="${o.Image}" alt="${o.Title}">
+              <h3>${o.Title}</h3>
+              <div class="route">${o.Origin}, ${o.Country} → ${o.Museum}</div>
+              <span class="status" style="background:${c}">${o.Status}</span>
+              <p style="margin:0.4rem 0;font-size:0.8rem;line-height:1.45">${o.Arrived} · ${o.How}</p>
+              <a href="index.html">Read the full story →</a>
+            </div>`;
+          const line = L.polyline(arc(from, to, 0.12 + (i % 3) * 0.04), {
+            color: c, weight: 3, opacity: 0.85, dashArray: c === "#2e6b3a" ? "8 8" : null
+          }).addTo(map).bindPopup(html);
+          const dot = L.circleMarker(returned ? from : from, { radius: 7, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 })
+            .addTo(map).bindPopup(html).bindTooltip(o.Title);
+          layers.push(line, dot);
+        });
+        map.fitBounds(L.featureGroup(layers).getBounds().pad(0.1));
+      });
+  </script>
+</body>
+</html>

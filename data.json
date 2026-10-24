@@ -14,7 +14,11 @@
   "Credit": "Photo: LBM1948, CC BY-SA 4.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Berl%C3%ADn,_Museo_de_P%C3%A9rgamo_05.jpg",
   "Source": "Wikipedia: Ishtar Gate",
-  "Link": "https://en.wikipedia.org/wiki/Ishtar_Gate"
+  "Link": "https://en.wikipedia.org/wiki/Ishtar_Gate",
+  "OriginLat": "32.5422",
+  "OriginLng": "44.4209",
+  "BerlinLat": "52.5211",
+  "BerlinLng": "13.3966"
  },
  {
   "ID": "02",
@@ -31,7 +35,11 @@
   "Credit": "Photo: SALT Research, no known restrictions",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Pergamon_Museum_in_Berlin.jpg",
   "Source": "Wikipedia: Pergamon Altar",
-  "Link": "https://en.wikipedia.org/wiki/Pergamon_Altar"
+  "Link": "https://en.wikipedia.org/wiki/Pergamon_Altar",
+  "OriginLat": "39.1319",
+  "OriginLng": "27.184",
+  "BerlinLat": "52.5211",
+  "BerlinLng": "13.3966"
  },
  {
   "ID": "03",
@@ -48,7 +56,11 @@
   "Credit": "Photo: Jsengupt, CC BY-SA 4.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Gate_of_Miletus_Pergamon_Museum_032025.jpg",
   "Source": "Wikipedia: Market Gate of Miletus",
-  "Link": "https://en.wikipedia.org/wiki/Market_Gate_of_Miletus"
+  "Link": "https://en.wikipedia.org/wiki/Market_Gate_of_Miletus",
+  "OriginLat": "37.53",
+  "OriginLng": "27.2783",
+  "BerlinLat": "52.5211",
+  "BerlinLng": "13.3966"
  },
  {
   "ID": "04",
@@ -65,7 +77,11 @@
   "Credit": "Photo: Raimond Spekking, CC BY-SA 4.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Mschatta-Fassade_(Pergamonmuseum).jpg",
   "Source": "Wikipedia: Mshatta Facade",
-  "Link": "https://en.wikipedia.org/wiki/Mshatta_Facade"
+  "Link": "https://en.wikipedia.org/wiki/Mshatta_Facade",
+  "OriginLat": "31.74",
+  "OriginLng": "35.9725",
+  "BerlinLat": "52.5211",
+  "BerlinLng": "13.3966"
  },
  {
   "ID": "05",
@@ -82,7 +98,11 @@
   "Credit": "Photo: Philip Pikart, CC BY-SA 3.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Nofretete_Neues_Museum.jpg",
   "Source": "Wikipedia: Nefertiti Bust",
-  "Link": "https://en.wikipedia.org/wiki/Nefertiti_Bust"
+  "Link": "https://en.wikipedia.org/wiki/Nefertiti_Bust",
+  "OriginLat": "27.645",
+  "OriginLng": "30.898",
+  "BerlinLat": "52.52",
+  "BerlinLng": "13.398"
  },
  {
   "ID": "06",
@@ -99,7 +119,11 @@
   "Credit": "Photo: Vassil, CC0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Leopard_aquamanile_Benin_Berlin_Beyond_compare_03052018_1.jpg",
   "Source": "Wikipedia: Benin Bronzes",
-  "Link": "https://en.wikipedia.org/wiki/Benin_Bronzes"
+  "Link": "https://en.wikipedia.org/wiki/Benin_Bronzes",
+  "OriginLat": "6.335",
+  "OriginLng": "5.6037",
+  "BerlinLat": "52.5173",
+  "BerlinLng": "13.402"
  },
  {
   "ID": "07",
@@ -116,7 +140,11 @@
   "Credit": "Historical photo: Felix von Luschan, public domain",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Photo_of_Ngonnso%27.png",
   "Source": "Wikipedia: Ngonnso",
-  "Link": "https://en.wikipedia.org/wiki/Ngonnso"
+  "Link": "https://en.wikipedia.org/wiki/Ngonnso",
+  "OriginLat": "6.2",
+  "OriginLng": "10.6667",
+  "BerlinLat": "52.5173",
+  "BerlinLng": "13.402"
  },
  {
   "ID": "08",
@@ -133,7 +161,11 @@
   "Credit": "Photo: Gryffindor, public domain",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Ethnologisches_Museum_Dahlem_Berlin_Mai_2006_017.jpg",
   "Source": "Wikipedia: Humboldt Forum",
-  "Link": "https://en.wikipedia.org/wiki/Humboldt_Forum"
+  "Link": "https://en.wikipedia.org/wiki/Humboldt_Forum",
+  "OriginLat": "-1.5333",
+  "OriginLng": "145.0667",
+  "BerlinLat": "52.5173",
+  "BerlinLng": "13.402"
  },
  {
   "ID": "09",
@@ -150,7 +182,11 @@
   "Credit": "Photo: Dosseman, CC BY-SA 4.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Giraffatitan_skeleton_in_Museum_f%C3%BCr_Naturkunde_Berlin_0831.jpg",
   "Source": "Wikipedia: Tendaguru Formation",
-  "Link": "https://en.wikipedia.org/wiki/Tendaguru_Formation"
+  "Link": "https://en.wikipedia.org/wiki/Tendaguru_Formation",
+  "OriginLat": "-9.73",
+  "OriginLng": "39.25",
+  "BerlinLat": "52.53",
+  "BerlinLng": "13.3794"
  },
  {
   "ID": "10",
@@ -167,6 +203,10 @@
   "Credit": "Photo: Ingeborg Simon, CC BY-SA 3.0",
   "CreditLink": "https://commons.wikimedia.org/wiki/File:Museum_Bo%C4%9Fazkale_Sphinx_01.jpg",
   "Source": "Wikipedia: Hattusa",
-  "Link": "https://en.wikipedia.org/wiki/Hattusa"
+  "Link": "https://en.wikipedia.org/wiki/Hattusa",
+  "OriginLat": "40.019",
+  "OriginLng": "34.615",
+  "BerlinLat": "52.5211",
+  "BerlinLng": "13.3966"
  }
 ]

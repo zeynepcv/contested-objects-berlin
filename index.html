@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whose Heritage? Contested Objects in Berlin's Museums</title>
+  <style>
+    :root {
+      --paper: #f6f3ee;
+      --ink: #1f1f1f;
+      --muted: #6b6b6b;
+      --line: #ddd6cb;
+      --accent: #8a1c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 2.5rem 1rem 3rem; background: var(--paper); color: var(--ink); font-family: Georgia, serif; }
+    header { max-width: 1100px; margin: 0 auto 1.5rem; }
+    .kicker { font-family: Helvetica, Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.3rem 0 0.8rem; line-height: 1.1; }
+    header p { max-width: 760px; line-height: 1.6; color: #3a3a3a; margin: 0 0 0.6rem; }
+    .filters { max-width: 1100px; margin: 1.5rem auto 2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .filters button { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.9rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; }
+    .filters button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .gallery { max-width: 1100px; margin: 0 auto; display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+    .photo { position: relative; aspect-ratio: 4 / 3; background: #e9e4dc; overflow: hidden; }
+    .photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .status { position: absolute; top: 0.7rem; left: 0.7rem; font-family: Helvetica, Arial, sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 3px; color: #fff; background: var(--accent); }
+    .status.returned, .status.ownership-transferred, .status.return-agreed { background: #2e6b3a; }
+    .status.no-formal-claim, .status.contested-provenance { background: #5a5a5a; }
+    .credit { font-family: Helvetica, Arial, sans-serif; font-size: 0.65rem; color: var(--muted); padding: 0.35rem 1rem 0; }
+    .credit a { color: var(--muted); }
+    .body { padding: 0.6rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
+    .title { font-size: 1.25rem; font-weight: bold; }
+    .facts { font-family: Helvetica, Arial, sans-serif; font-size: 0.78rem; color: #444; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
+    .facts dt { color: var(--muted); }
+    .facts dd { margin: 0; }
+    .desc { font-size: 0.9rem; line-height: 1.55; color: #333; flex: 1; }
+    .source { font-size: 0.78rem; }
+    .source a { color: var(--accent); }
+    footer { max-width: 1100px; margin: 3rem auto 0; font-size: 0.8rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 1rem; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">A virtual exhibition</div>
+    <h1>Whose Heritage? Contested Objects in Berlin's Museums</h1>
+    <p>Berlin's museums display some of the most famous objects in the world, yet many of them were taken from their places of origin through colonial expeditions, unequal agreements between empires, or outright looting. This small exhibition gathers ten such objects and asks the questions that museum labels often leave out: where did they come from, how did they reach Berlin, and who wants them back?</p>
+  </header>
+
+  <div class="filters" id="filters"></div>
+  <div class="gallery" id="gallery"><p>Loading…</p></div>
+
+  <footer>
+    Data is kept in a Google Sheet and loaded with <a href="https://opensheet.elk.sh">opensheet</a>; a copy is stored in this repository as <code>data.json</code> in case the sheet becomes unavailable. Photos come from Wikimedia Commons under free licences, credited on each card.<br>
+    Created by Zeynep Canan Vural for LV 14141 <em>Digital Humanities and Data Sustainability</em>, Freie Universität Berlin. Code written with assistance from Claude (Anthropic).
+  </footer>
+
+  <script>
+    // Google Sheet ID (the long code in the sheet's URL). Leave empty to use only data.json.
+    const SHEET_ID = "1_zwzwG5XYYNoi80GaJrthII9lsUCWtG_BuXIvvAswxw";
+    const SHEET_ENDPOINT = `https://opensheet.elk.sh/${SHEET_ID}/1`;
+    const FALLBACK = "data.json";
+
+    let objects = [];
+    let active = "All";
+
+    const load = url => fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    const slug = s => s.toLowerCase().replace(/[^a-z]+/g, "-");
+
+    (SHEET_ID ? load(SHEET_ENDPOINT).catch(() => load(FALLBACK)) : load(FALLBACK))
+      .then(data => {
+        objects = data.filter(o => o.Title);
+        renderFilters();
+        renderGallery();
+      })
+      .catch(err => {
+        document.getElementById("gallery").innerHTML = "<p>Sorry, the data could not be loaded.</p>";
+        console.error(err);
+      });
+
+    function renderFilters() {
+      const statuses = ["All", ...new Set(objects.map(o => o.Status))];
+      const box = document.getElementById("filters");
+      box.innerHTML = "";
+      statuses.forEach(s => {
+        const b = document.createElement("button");
+        b.textContent = s;
+        if (s === active) b.className = "active";
+        b.onclick = () => { active = s; renderFilters(); renderGallery(); };
+        box.appendChild(b);
+      });
+    }
+
+    function renderGallery() {
+      const g = document.getElementById("gallery");
+      g.innerHTML = "";
+      objects.filter(o => active === "All" || o.Status === active).forEach(o => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="photo">
+            <img src="${o.Image}" alt="${o.Title}" loading="lazy">
+            <span class="status ${slug(o.Status)}">${o.Status}</span>
+          </div>
+          <div class="credit"><a href="${o.CreditLink}" target="_blank" rel="noopener">${o.Credit}</a></div>
+          <div class="body">
+            <div class="title">${o.Title}</div>
+            <dl class="facts">
+              <dt>From</dt><dd>${o.Origin}, ${o.Country}</dd>
+              <dt>Made</dt><dd>${o.Made}</dd>
+              <dt>In Berlin</dt><dd>${o.Arrived} · ${o.How}</dd>
+              <dt>Now</dt><dd>${o.Museum}</dd>
+            </dl>
+            <div class="desc">${o.Description}</div>
+            <div class="source">Source: <a href="${o.Link}" target="_blank" rel="noopener">${o.Source}</a></div>
+          </div>`;
+        g.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

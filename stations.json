@@ -415,9 +415,9 @@
   "Place": "Berlin, Museum Island",
   "Lat": "52.5211",
   "Lng": "13.3966",
-  "Text": "The bust returns to the rebuilt Neues Museum. Egypt continues to demand it back; Berlin cites the 1913 protocol.",
-  "Source": "Wikipedia: Nefertiti Bust",
-  "Link": "https://en.wikipedia.org/wiki/Nefertiti_Bust"
+  "Text": "The bust returns to the rebuilt Neues Museum. Egypt's demands continue: in 2025 former antiquities minister Zahi Hawass collects more than 200,000 signatures for its return, while the museum insists it was acquired legally and is too fragile to travel.",
+  "Source": "Boston Globe (2025)",
+  "Link": "https://www.bostonglobe.com/2025/12/26/world/new-egyptian-museum-brings-pressure-return-nefertitis-bust"
  },
  {
   "ObjectID": "06",
@@ -723,13 +723,13 @@
   "ObjectID": "09",
   "Year": "Today",
   "Order": "6",
-  "Title": "Ownership questioned",
+  "Title": "Calls for return",
   "Place": "Lindi Region",
   "Lat": "-9.73",
   "Lng": "39.25",
-  "Text": "German and Tanzanian commentators question the museum's claim; Tanzania has not made an official return request. The museums prefer research cooperation.",
-  "Source": "Wikipedia: Tendaguru Formation",
-  "Link": "https://en.wikipedia.org/wiki/Tendaguru_Formation"
+  "Text": "Tanzanian politicians and commentators have called for the fossils' return, and a request is reported as early as 1987. No return has been agreed; the German side prefers research cooperation with Tanzanian institutions.",
+  "Source": "Restitution Matters",
+  "Link": "https://restitutionmatters.org/publication/the-unresolved-case-of-the-tendaguru-dinosaur/"
  },
  {
   "ObjectID": "10",
@@ -793,7 +793,7 @@
  },
  {
   "ObjectID": "10",
-  "Year": "November 2011",
+  "Year": "2011",
   "Order": "6",
   "Title": "Reunited at home",
   "Place": "Boğazköy",

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About · Contested Objects</title>
+  <link rel="icon" href="seal.png">
+  <style>
+    :root { --ink: #1f1f1f; --muted: #6b6b6b; --line: #e2ddd5; --accent: #8a1c1c; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+    a { color: var(--accent); }
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1rem max(16px, 4vw); border-bottom: 1px solid var(--line); }
+    .top img { height: 64px; display: block; }
+    .top nav { font-family: Arial, Helvetica, sans-serif; font-size: 0.9rem; display: flex; gap: 1.2rem; }
+    .top nav a { color: var(--ink); text-decoration: none; }
+    .top nav a:hover, .top nav a[aria-current] { color: var(--accent); }
+    main { max-width: 720px; margin: 0 auto; padding: 2.5rem max(16px, 4vw) 3rem; line-height: 1.75; font-size: 1.03rem; }
+    h1 { font-family: Arial, Helvetica, sans-serif; font-size: 2rem; margin: 0 0 1.2rem; }
+    h2 { font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin: 2.4rem 0 0.6rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+    ul { padding-left: 1.2rem; }
+    li { margin-bottom: 0.4rem; }
+    code { font-size: 0.9em; background: #f4f1ec; padding: 0.05rem 0.3rem; }
+    .refs li { font-size: 0.92rem; }
+    footer { font-size: 0.75rem; color: var(--muted); padding: 1.5rem max(16px, 4vw); border-top: 1px solid var(--line); line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a href="index.html"><img src="logo.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums"></a>
+    <nav><a href="index.html">Exhibition</a><a href="map.html">Map</a><a href="about.html" aria-current="page">About</a></nav>
+  </div>
+  <main>
+    <h1>About this project</h1>
+
+    <p><em>Contested Objects</em> is a small digital exhibition about ten objects that are, or until recently were, held in Berlin's museums and whose presence there is disputed. They include the Ishtar Gate from Babylon, the Pergamon Altar, the bust of Nefertiti, the Benin Bronzes and the statue of Ngonnso. Each was made somewhere else, for people with their own beliefs and histories, and reached Berlin through excavations under unequal agreements, diplomatic gifts between empires, colonial expeditions or looting.</p>
+    <p>Museum labels usually tell visitors what an object is and how old it is. This project asks different questions: where did the object come from and what did it mean there, how did it get to Berlin, what happened to it since, and who wants it back?</p>
+
+    <h2>Approach: object biographies</h2>
+    <p>The project follows the idea of the <strong>cultural biography of objects</strong>, introduced by the anthropologist Igor Kopytoff (1986) and developed in archaeology by Chris Gosden and Yvonne Marshall (1999). In this view, objects have life histories. They are made, used, exchanged, taken, displayed and argued over, and their meaning changes at each stage. Every object page in this exhibition is therefore built as a biography: a short account of its place of origin, followed by the stations of its life, from its making to its present situation, each linked to a place on a map.</p>
+
+    <h2>The selection</h2>
+    <p>The ten objects were chosen to show the range of ways in which objects came to Berlin and the range of situations they are in today:</p>
+    <ul>
+      <li><strong>Excavations</strong> in the late Ottoman Empire and Egypt (Ishtar Gate, Pergamon Altar, Market Gate of Miletus, Nefertiti, the Sphinx of Hattusa)</li>
+      <li><strong>A diplomatic gift</strong> between the Ottoman and German emperors (Mshatta Facade)</li>
+      <li><strong>Colonial violence and acquisition</strong> in Africa and the Pacific (Benin Bronzes, Ngonnso, the Luf boat, the Giraffatitan skeleton)</li>
+    </ul>
+    <p>Their current status ranges from open restitution claims to objects whose ownership has been transferred, whose return has been agreed, or which have already gone home. The Sphinx of Hattusa, returned to Turkey in 2011, is included to show that return is possible.</p>
+
+    <h2>Data and method</h2>
+    <p>The exhibition is built from two linked tables:</p>
+    <ul>
+      <li><strong>Objects</strong>: one row per object, with its origin, date, current location, how it reached Berlin, its restitution status, a description, a photo and its credit line.</li>
+      <li><strong>Stations</strong>: one row per event in an object's life, with a date, a place name, coordinates, a short text and a source. Each station belongs to an object through its ID.</li>
+    </ul>
+    <p>The object table is maintained in a Google Sheet and loaded into the exhibition page through <a href="https://opensheet.elk.sh">opensheet</a>, which turns the sheet into JSON. Editing a row in the sheet updates the website without changing any code. A copy of both tables is stored in the repository as <code>data.json</code> and <code>stations.json</code>, and the pages fall back to these files if the sheet cannot be reached. The maps are drawn with the open-source library <a href="https://leafletjs.com">Leaflet</a> on <a href="https://www.openstreetmap.org">OpenStreetMap</a> tiles.</p>
+    <p>Facts were collected from openly accessible sources, mainly Wikipedia articles and their references, the provenance pages of the Staatliche Museen zu Berlin, and news reporting on restitution cases. Every station on every object page links to its source.</p>
+
+    <h2>Images and rights</h2>
+    <p>All photographs come from Wikimedia Commons and are in the public domain or under Creative Commons licences. Each image is credited with its photographer and licence on the page where it appears. Press and museum photographs were deliberately not used, because the project should be freely shareable and should not depend on permissions that can expire.</p>
+
+    <h2>Sustainability</h2>
+    <p>The project is designed to stay online and usable with as little maintenance as possible:</p>
+    <ul>
+      <li>It is a <strong>static website</strong> of plain HTML, CSS and JavaScript, with no server, database or login to maintain.</li>
+      <li>It is hosted free of charge on <strong>GitHub Pages</strong>, and the full source code and data are public in the repository, so anyone can copy, archive or continue the project.</li>
+      <li>The data is kept in <strong>open, simple formats</strong> (a spreadsheet, CSV and JSON) that can be read without special software.</li>
+      <li>The site depends on only two external services, the Google Sheet and the map tiles, and keeps working without the first through its local data files.</li>
+    </ul>
+
+    <h2>Limitations</h2>
+    <p>This is a proof of concept, not a complete record. The selection is small and centred on Berlin. Most of the sources are in European languages and many are secondary, so the perspectives of the communities these objects come from are present mainly through the restitution claims they have made. Restitution cases change quickly; the information reflects the state of the sources in October 2026.</p>
+
+    <h2>References</h2>
+    <ul class="refs">
+      <li>Gosden, Chris, and Yvonne Marshall. "The Cultural Biography of Objects." <em>World Archaeology</em> 31, no. 2 (1999): 169–178.</li>
+      <li>Kopytoff, Igor. "The Cultural Biography of Things: Commoditization as Process." In <em>The Social Life of Things</em>, edited by Arjun Appadurai, 64–91. Cambridge: Cambridge University Press, 1986.</li>
+      <li>Further sources are linked on each object page.</li>
+    </ul>
+
+    <h2>Credits</h2>
+    <p>Created by Zeynep Canan Vural for the course LV 14141 <em>Digital Humanities and Data Sustainability</em> (Dr. Christian Casey), Freie Universität Berlin, 2026. Code written with assistance from Claude (Anthropic). Texts and data by the author are available under a <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> licence.</p>
+  </main>
+  <footer>Photos from Wikimedia Commons under free licences, credited on each page. Map data © OpenStreetMap contributors.</footer>
+</body>
+</html>

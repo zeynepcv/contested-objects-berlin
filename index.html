@@ -14,26 +14,29 @@
       --accent: #8a1c1c;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 2.5rem 1rem 3rem; background: #fff; color: var(--ink); font-family: Georgia, serif; }
+    body { margin: 0; padding: 2.5rem 1rem 3rem; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
     header { max-width: 1100px; margin: 0 auto 1.5rem; }
-    .kicker { font-family: Helvetica, Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+    .kicker { font-family: Arial, Helvetica, sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
     h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.3rem 0 0.8rem; line-height: 1.1; }
     header p { max-width: 760px; line-height: 1.6; color: #3a3a3a; margin: 0 0 0.6rem; }
     .filters { max-width: 1100px; margin: 1.5rem auto 2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .filters button { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.9rem; border: 1px solid var(--line); border-radius: 999px; background: #fff; cursor: pointer; }
+    .filters button { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.9rem; border: 1px solid var(--line); border-radius: 2px; background: #fff; cursor: pointer; }
     .filters button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
     .gallery { max-width: 1100px; margin: 0 auto; display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    .card { background: #fff; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
     .photo { position: relative; aspect-ratio: 4 / 3; background: #e9e4dc; overflow: hidden; }
     .photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .status { position: absolute; top: 0.7rem; left: 0.7rem; font-family: Helvetica, Arial, sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 3px; color: #fff; background: var(--accent); }
+    .status { position: absolute; top: 0.7rem; left: 0.7rem; font-family: Arial, Helvetica, sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 3px; color: #fff; background: var(--accent); }
     .status.returned, .status.ownership-transferred, .status.return-agreed { background: #2e6b3a; }
     .status.no-formal-claim, .status.contested-provenance { background: #5a5a5a; }
-    .credit { font-family: Helvetica, Arial, sans-serif; font-size: 0.65rem; color: var(--muted); padding: 0.35rem 1rem 0; }
+    .credit { font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; color: var(--muted); padding: 0.35rem 1rem 0; }
     .credit a { color: var(--muted); }
     .body { padding: 0.6rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
-    .title { font-size: 1.25rem; font-weight: bold; }
-    .facts { font-family: Helvetica, Arial, sans-serif; font-size: 0.78rem; color: #444; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
+    .title { font-size: 1.25rem; font-weight: bold; color: var(--ink); text-decoration: none; }
+    .title:hover { color: var(--accent); }
+    .more { font-family: Arial, Helvetica, sans-serif; font-size: 0.82rem; color: var(--accent); }
+    .navlinks a { color: var(--accent); }
+    .facts { font-family: Arial, Helvetica, sans-serif; font-size: 0.78rem; color: #444; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
     .facts dt { color: var(--muted); }
     .facts dd { margin: 0; }
     .desc { font-size: 0.9rem; line-height: 1.55; color: #333; flex: 1; }
@@ -46,8 +49,8 @@
 <body>
   <header>
     <h1><img src="logo.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums" style="width:100%;max-width:640px;display:block"></h1>
-    <p>Berlin's museums display some of the most famous objects in the world, yet many of them were taken from their places of origin through colonial expeditions, unequal agreements between empires, or outright looting. This small exhibition gathers ten such objects and asks the questions that museum labels often leave out: where did they come from, how did they reach Berlin, and who wants them back?</p>
-    <p><a href="map.html" style="color:var(--accent)">See where the objects came from on a map →</a></p>
+    <p>Berlin's museums display some of the most famous objects in the world, yet many of them were taken from their places of origin through colonial expeditions, unequal agreements between empires, or outright looting. This small exhibition gathers ten such objects and tells their biographies: where they were made and what they meant there, how they reached Berlin, what happened to them since, and who wants them back.</p>
+    <p class="navlinks"><a href="map.html">Map of the objects' journeys</a> · <a href="about.html">About this project</a></p>
   </header>
 
   <div class="filters" id="filters"></div>
@@ -102,12 +105,12 @@
         card.className = "card";
         card.innerHTML = `
           <div class="photo">
-            <img src="${o.Image}" alt="${o.Title}" loading="lazy">
+            <a href="object.html?id=${o.ID}"><img src="${o.Image}" alt="${o.Title}" loading="lazy"></a>
             <span class="status ${slug(o.Status)}">${o.Status}</span>
           </div>
           <div class="credit"><a href="${o.CreditLink}" target="_blank" rel="noopener">${o.Credit}</a></div>
           <div class="body">
-            <div class="title">${o.Title}</div>
+            <a class="title" href="object.html?id=${o.ID}">${o.Title}</a>
             <dl class="facts">
               <dt>From</dt><dd>${o.Origin}, ${o.Country}</dd>
               <dt>Made</dt><dd>${o.Made}</dd>
@@ -115,7 +118,7 @@
               <dt>Now</dt><dd>${o.Museum}</dd>
             </dl>
             <div class="desc">${o.Description}</div>
-            <div class="source">Source: <a href="${o.Link}" target="_blank" rel="noopener">${o.Source}</a></div>
+            <a class="more" href="object.html?id=${o.ID}">Read the object's biography →</a>
           </div>`;
         g.appendChild(card);
       });

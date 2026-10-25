@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Object · Contested Objects</title>
+  <link rel="icon" href="seal.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root { --ink: #1f1f1f; --muted: #6b6b6b; --line: #e2ddd5; --soft: #f6f3ee; --accent: #8a1c1c; --green: #2e6b3a; --grey: #5a5a5a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+    a { color: var(--accent); }
+    .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1rem max(16px, 4vw); border-bottom: 1px solid var(--line); }
+    .top img { height: 64px; display: block; }
+    .top nav { font-family: Arial, Helvetica, sans-serif; font-size: 0.9rem; display: flex; gap: 1.2rem; }
+    .top nav a { color: var(--ink); text-decoration: none; }
+    .top nav a:hover { color: var(--accent); }
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem max(16px, 4vw) 3rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+    .hero figure { margin: 0; background: var(--soft); border: 1px solid var(--line); }
+    .hero img { width: 100%; max-height: 460px; object-fit: contain; display: block; }
+    .hero figcaption { font-family: Arial, Helvetica, sans-serif; font-size: 0.7rem; color: var(--muted); padding: 0.4rem 0.6rem; background: #fff; }
+    .hero figcaption a { color: var(--muted); }
+    .status { display: inline-block; font-family: Arial, Helvetica, sans-serif; font-size: 0.72rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; color: #fff; padding: 0.3rem 0.6rem; border-radius: 3px; }
+    h1 { font-family: Arial, Helvetica, sans-serif; font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 0.6rem 0 1rem; line-height: 1.1; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 0.35rem 1rem; font-family: Arial, Helvetica, sans-serif; font-size: 0.88rem; margin: 0 0 1rem; }
+    dt { color: var(--muted); } dd { margin: 0; }
+    .summary { line-height: 1.6; color: #333; font-size: 0.98rem; }
+    h2 { font-family: Arial, Helvetica, sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin: 3rem 0 1rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+    .story { max-width: 720px; font-size: 1.05rem; line-height: 1.75; }
+    .life { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; align-items: start; }
+    ol.timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+    ol.timeline li { position: relative; padding: 0 0 1.4rem 1.4rem; cursor: pointer; }
+    ol.timeline li::before { content: attr(data-n); position: absolute; left: -0.85rem; top: 0; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: #fff; border: 2px solid var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: 0.72rem; font-weight: bold; display: grid; place-items: center; }
+    ol.timeline li.active::before { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .yr { font-family: Arial, Helvetica, sans-serif; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+    .st { font-family: Arial, Helvetica, sans-serif; font-weight: bold; margin: 0.15rem 0 0.3rem; }
+    .tx { line-height: 1.55; font-size: 0.93rem; color: #333; margin: 0; }
+    .src { font-family: Arial, Helvetica, sans-serif; font-size: 0.72rem; margin-top: 0.3rem; }
+    #map { height: 520px; border: 1px solid var(--line); position: sticky; top: 1rem; }
+    .pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; font-family: Arial, Helvetica, sans-serif; font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+    footer { font-size: 0.75rem; color: var(--muted); padding: 1.5rem max(16px, 4vw); border-top: 1px solid var(--line); line-height: 1.6; }
+    @media (max-width: 800px) { .hero, .life { grid-template-columns: 1fr; } #map { position: static; height: 360px; } }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <a href="index.html"><img src="logo.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums"></a>
+    <nav><a href="index.html">Exhibition</a><a href="map.html">Map</a><a href="about.html">About</a></nav>
+  </div>
+  <main id="main"><p>Loading…</p></main>
+  <footer>Created by Zeynep Canan Vural for LV 14141 <em>Digital Humanities and Data Sustainability</em>, Freie Universität Berlin. Photos from Wikimedia Commons under free licences. Map data © OpenStreetMap contributors. Code written with assistance from Claude (Anthropic).</footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const statusColor = s => s === "Return requested" ? "#8a1c1c" :
+      (s === "Returned" || s === "Return agreed" || s === "Ownership transferred") ? "#2e6b3a" : "#5a5a5a";
+    const id = new URLSearchParams(location.search).get("id") || "01";
+
+    Promise.all([fetch("data.json").then(r => r.json()), fetch("stations.json").then(r => r.json())])
+      .then(([objects, stations]) => {
+        const i = objects.findIndex(o => o.ID === id);
+        const o = objects[i];
+        if (!o) { document.getElementById("main").innerHTML = "<p>Object not found. <a href='index.html'>Back to the exhibition</a></p>"; return; }
+        const st = stations.filter(s => s.ObjectID === id).sort((a, b) => +a.Order - +b.Order);
+        const prev = objects[(i - 1 + objects.length) % objects.length], next = objects[(i + 1) % objects.length];
+        document.title = o.Title + " · Contested Objects";
+        document.getElementById("main").innerHTML = `
+          <section class="hero">
+            <figure><img src="${o.Image}" alt="${o.Title}"><figcaption><a href="${o.CreditLink}" target="_blank" rel="noopener">${o.Credit}</a></figcaption></figure>
+            <div>
+              <span class="status" style="background:${statusColor(o.Status)}">${o.Status}</span>
+              <h1>${o.Title}</h1>
+              <dl>
+                <dt>From</dt><dd>${o.Origin}, ${o.Country}</dd>
+                <dt>Made</dt><dd>${o.Made}</dd>
+                <dt>In Berlin</dt><dd>${o.Arrived} · ${o.How}</dd>
+                <dt>Now</dt><dd>${o.Museum}</dd>
+              </dl>
+              <p class="summary">${o.Description}</p>
+            </div>
+          </section>
+          <h2>Where it comes from</h2>
+          <p class="story">${o.Story}</p>
+          <h2>The life of the object</h2>
+          <div class="life">
+            <ol class="timeline">${st.map((s, k) => `
+              <li data-k="${k}" data-n="${k + 1}">
+                <div class="yr">${s.Year} · ${s.Place}</div>
+                <div class="st">${s.Title}</div>
+                <p class="tx">${s.Text}</p>
+                <div class="src">Source: <a href="${s.Link}" target="_blank" rel="noopener">${s.Source}</a></div>
+              </li>`).join("")}
+            </ol>
+            <div id="map"></div>
+          </div>
+          <div class="pager">
+            <a href="object.html?id=${prev.ID}">← ${prev.Title}</a>
+            <a href="object.html?id=${next.ID}">${next.Title} →</a>
+          </div>`;
+
+        const map = L.map("map", { scrollWheelZoom: false });
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
+        const pts = st.map(s => [+s.Lat, +s.Lng]);
+        L.polyline(pts, { color: statusColor(o.Status), weight: 3, opacity: 0.8, dashArray: "6 6" }).addTo(map);
+        // Stations at the same place share one marker, labelled with all their numbers
+        const groups = {};
+        st.forEach((s, k) => { const key = pts[k].join(","); (groups[key] = groups[key] || []).push(k); });
+        const markers = [];
+        Object.values(groups).forEach(ks => {
+          const m = L.marker(pts[ks[0]], {
+            icon: L.divIcon({ className: "", html: `<div style="min-width:26px;height:26px;padding:0 6px;border-radius:13px;background:#fff;border:2px solid #1f1f1f;font:bold 12px Arial,Helvetica,sans-serif;display:grid;place-items:center;white-space:nowrap">${ks.map(k => k + 1).join(" · ")}</div>`, iconSize: null, iconAnchor: [13, 13] })
+          }).addTo(map).bindTooltip(ks.map(k => `${k + 1}. ${st[k].Title} (${st[k].Year})`).join("<br>"));
+          ks.forEach(k => markers[k] = m);
+        });
+        map.fitBounds(L.latLngBounds(pts).pad(0.25), { maxZoom: 6 });
+
+        document.querySelectorAll("ol.timeline li").forEach(li => li.addEventListener("click", () => {
+          document.querySelectorAll("ol.timeline li").forEach(x => x.classList.remove("active"));
+          li.classList.add("active");
+          const k = +li.dataset.k;
+          map.flyTo(pts[k], 6, { duration: 0.8 });
+          markers[k].openTooltip();
+        }));
+      });
+  </script>
+</body>
+</html>

@@ -5,90 +5,254 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contested Objects: Provenance and Restitution in Berlin's Museums</title>
   <link rel="icon" href="seal.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    :root {
-      --paper: #f6f3ee;
-      --ink: #1f1f1f;
-      --muted: #6b6b6b;
-      --line: #ddd6cb;
-      --accent: #8a1c1c;
-    }
+    :root { --ink: #1f1f1f; --muted: #6b6b6b; --line: #ddd6cb; --soft: #f6f3ee; --accent: #8a1c1c; }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 2.5rem 1rem 3rem; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
-    header { max-width: 1100px; margin: 0 auto 1.5rem; }
-    .kicker { font-family: Arial, Helvetica, sans-serif; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
-    h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin: 0.3rem 0 0.8rem; line-height: 1.1; }
-    header p { max-width: 760px; line-height: 1.6; color: #3a3a3a; margin: 0 0 0.6rem; }
-    .filters { max-width: 1100px; margin: 1.5rem auto 2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .filters button { font: inherit; font-size: 0.85rem; padding: 0.35rem 0.9rem; border: 1px solid var(--line); border-radius: 2px; background: #fff; cursor: pointer; }
-    .filters button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
-    .gallery { max-width: 1100px; margin: 0 auto; display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    .card { background: #fff; border: 1px solid var(--line); border-radius: 0; overflow: hidden; display: flex; flex-direction: column; }
+    html { scroll-behavior: smooth; scroll-snap-type: y proximity; }
+    body { margin: 0; background: #fff; color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+    a { color: var(--accent); }
+
+    /* top navigation */
+    .nav { position: sticky; top: 0; z-index: 1000; background: #fff; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 0.6rem max(16px, 3vw); }
+    .nav .brand { display: flex; align-items: center; gap: 0.6rem; color: var(--ink); text-decoration: none; font-weight: bold; }
+    .nav .brand img { height: 36px; }
+    .nav nav { display: flex; gap: 1.2rem; font-size: 0.9rem; flex-wrap: wrap; }
+    .nav nav a { color: var(--ink); text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+    .nav nav a.current { border-bottom-color: var(--ink); }
+
+    /* the three "slides" */
+    section.slide { min-height: calc(100vh - 58px); scroll-snap-align: start; scroll-margin-top: 58px; padding: 3rem max(16px, 4vw); border-bottom: 1px solid var(--line); }
+    .inner { max-width: 1100px; margin: 0 auto; }
+    .label { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin: 0 0 0.6rem; }
+    h2 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); margin: 0 0 1rem; line-height: 1.15; }
+    .lead { max-width: 760px; line-height: 1.65; color: #333; font-size: 1.02rem; margin: 0 0 0.9rem; }
+
+    /* 1 · introduction */
+    #intro { display: flex; align-items: center; }
+    #intro .logo { width: 100%; max-width: 640px; display: block; margin: 0 0 2rem; }
+    .figures { display: flex; gap: 2.5rem; flex-wrap: wrap; margin: 1.8rem 0; }
+    .figures div { border-top: 2px solid var(--ink); padding-top: 0.5rem; min-width: 110px; }
+    .figures b { display: block; font-size: 2rem; }
+    .figures span { font-size: 0.85rem; color: var(--muted); }
+    .next { display: inline-block; margin-top: 1rem; font-size: 0.9rem; color: var(--ink); text-decoration: none; border: 1px solid var(--ink); padding: 0.5rem 1rem; }
+    .next:hover { background: var(--ink); color: #fff; }
+
+    /* 2 · map */
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: 0.8rem; margin: 0 0 0.7rem; }
+    .legend span::before { content: ""; display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--ink); margin-right: 6px; vertical-align: 3px; }
+    .legend span.dash::before { border-top-style: dashed; }
+    .objects { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0 0 0.8rem; }
+    .objects button, .filters button { font: 0.8rem Arial, Helvetica, sans-serif; padding: 0.3rem 0.7rem; border: 1px solid var(--line); border-radius: 2px; background: #fff; cursor: pointer; }
+    .objects button.active, .filters button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .objects .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+    #map { height: 64vh; min-height: 420px; border: 1px solid var(--line); }
+    .popup { width: 240px; font-family: Arial, Helvetica, sans-serif; }
+    .popup img { width: 100%; height: 140px; object-fit: contain; background: #eee8df; display: block; margin-bottom: 0.4rem; }
+    .popup h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+    .popup .route { font-size: 0.75rem; color: var(--muted); }
+    .popup .badge { font-size: 0.68rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #fff; padding: 0.15rem 0.4rem; border-radius: 2px; display: inline-block; }
+    .popup a { font-size: 0.8rem; }
+
+    /* 3 · objects */
+    .filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.6rem; }
+    .gallery { display: grid; gap: 1.6rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .card { border: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
     .photo { position: relative; aspect-ratio: 4 / 3; background: #e9e4dc; overflow: hidden; }
     .photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
-    .status { position: absolute; top: 0.7rem; left: 0.7rem; font-family: Arial, Helvetica, sans-serif; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 3px; color: #fff; background: var(--accent); }
+    .status { position: absolute; top: 0.7rem; left: 0.7rem; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.3rem 0.6rem; border-radius: 2px; color: #fff; background: var(--accent); }
     .status.returned, .status.ownership-transferred, .status.return-agreed { background: #2e6b3a; }
     .status.no-formal-claim, .status.contested-provenance { background: #5a5a5a; }
-    .credit { font-family: Arial, Helvetica, sans-serif; font-size: 0.65rem; color: var(--muted); padding: 0.35rem 1rem 0; }
+    .credit { font-size: 0.65rem; color: var(--muted); padding: 0.35rem 1rem 0; }
     .credit a { color: var(--muted); }
     .body { padding: 0.6rem 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.55rem; flex: 1; }
-    .title { font-size: 1.25rem; font-weight: bold; color: var(--ink); text-decoration: none; }
+    .title { font-size: 1.2rem; font-weight: bold; color: var(--ink); text-decoration: none; }
     .title:hover { color: var(--accent); }
-    .more { font-family: Arial, Helvetica, sans-serif; font-size: 0.82rem; color: var(--accent); }
-    .navlinks a { color: var(--accent); }
-    .facts { font-family: Arial, Helvetica, sans-serif; font-size: 0.78rem; color: #444; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; }
+    .facts { font-size: 0.78rem; color: #444; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.7rem; margin: 0; }
     .facts dt { color: var(--muted); }
     .facts dd { margin: 0; }
-    .desc { font-size: 0.9rem; line-height: 1.55; color: #333; flex: 1; }
-    .source { font-size: 0.78rem; }
-    .source a { color: var(--accent); }
-    footer { max-width: 1100px; margin: 3rem auto 0; font-size: 0.8rem; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--line); padding-top: 1rem; }
+    .desc { font-size: 0.88rem; line-height: 1.55; color: #333; flex: 1; }
+    .more { font-size: 0.82rem; }
+
+    /* distinct colour for each part */
+    #intro { background: #0f1b2d; color: #f4f1ea; }
+    #intro .lead { color: #d9dde5; }
+    #intro .figures div { border-top-color: #f4f1ea; }
+    #intro .figures span { color: #aab3c2; }
+    #intro .next { color: #f4f1ea; border-color: #f4f1ea; }
+    #intro .next:hover { background: #f4f1ea; color: #0f1b2d; }
+    #map-section { background: #b39377; color: #1e140e; }
+    #map-section .label { color: #3b2416; }
+    #map-section .lead { color: #2a1c13; }
+    #map-section .legend span::before { border-top-color: #1e140e; }
+    #map-section #map { border-color: #7a5d46; }
+    #map-section .objects button { border-color: #7a5d46; }
+    #map-section .next { color: #1e140e; border-color: #1e140e; }
+    #map-section .next:hover { background: #1e140e; color: #b39377; }
+    #objects { background: #4b1c33; color: #f3e9ee; }
+    #objects .label { color: #e7b9cc; }
+    #objects .lead { color: #e6d5dd; }
+    #objects .card { background: #fff; color: var(--ink); border-color: #6a3450; }
+    #objects .filters button { border-color: #6a3450; }
+    section.slide { border-bottom: none; }
+    footer { font-size: 0.78rem; color: var(--muted); line-height: 1.6; padding: 1.5rem max(16px, 4vw); }
     footer a { color: var(--muted); }
   </style>
 </head>
 <body>
-  <header>
-    <h1><img src="logo.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums" style="width:100%;max-width:640px;display:block"></h1>
-    <p>Berlin's museums display some of the most famous objects in the world, yet many of them were taken from their places of origin through colonial expeditions, unequal agreements between empires, or outright looting. This small exhibition gathers ten such objects and tells their biographies: where they were made and what they meant there, how they reached Berlin, what happened to them since, and who wants them back.</p>
-    <p class="navlinks"><a href="map.html">Map of the objects' journeys</a> · <a href="about.html">About this project</a></p>
-  </header>
+  <div class="nav">
+    <a class="brand" href="#intro"><img src="seal.png" alt="">Contested Objects</a>
+    <nav>
+      <a href="#intro">Introduction</a>
+      <a href="#map-section">Map</a>
+      <a href="#objects">Objects</a>
+      <a href="about.html">Project notes</a>
+    </nav>
+  </div>
 
-  <div class="filters" id="filters"></div>
-  <div class="gallery" id="gallery"><p>Loading…</p></div>
+  <!-- 1 · Introduction -->
+  <section class="slide" id="intro">
+    <div class="inner">
+      <img class="logo" src="logo_white.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums">
+      <p class="lead">Berlin's museums display some of the most famous objects in the world, yet many of them were taken from their places of origin through colonial expeditions, unequal agreements between empires, or outright looting.</p>
+      <p class="lead">This digital exhibition follows ten such objects, from the Ishtar Gate and the Pergamon Altar to the bust of Nefertiti, the Benin Bronzes and the statue of Ngonnso. It tells each object's biography: where it was made and what it meant there, how it reached Berlin, what happened to it since, and who wants it back.</p>
+      <div class="figures">
+        <div><b>10</b><span>objects</span></div>
+        <div><b>67</b><span>stations in their lives</span></div>
+        <div><b>8</b><span>countries of origin</span></div>
+        <div><b>3</b><span>returned, transferred or agreed to return</span></div>
+      </div>
+      <a class="next" href="#map-section">Follow their journeys ↓</a>
+    </div>
+  </section>
+
+  <!-- 2 · Map -->
+  <section class="slide" id="map-section">
+    <div class="inner">
+      <p class="label">The journeys</p>
+      <h2>From their places of origin to Berlin</h2>
+      <p class="lead">Each line follows one object through every station of its life. Choose an object or click a line to follow its route, click a dot to see what happened there, and click anywhere on the map to show all objects again.</p>
+      <div class="legend">
+        <span>Solid line: still in Berlin</span>
+        <span class="dash">Dashed line: returned, return agreed or ownership transferred</span>
+      </div>
+      <div id="objectsbar" class="objects"></div>
+      <div id="map"></div>
+      <a class="next" href="#objects">See the objects ↓</a>
+    </div>
+  </section>
+
+  <!-- 3 · Objects -->
+  <section class="slide" id="objects">
+    <div class="inner">
+      <p class="label">The objects</p>
+      <h2>Ten contested objects</h2>
+      <p class="lead">Filter by restitution status, or open an object to read its full biography.</p>
+      <div class="filters" id="filters"></div>
+      <div class="gallery" id="gallery"><p>Loading…</p></div>
+    </div>
+  </section>
 
   <footer>
-    Data is kept in a Google Sheet and loaded with <a href="https://opensheet.elk.sh">opensheet</a>; a copy is stored in this repository as <code>data.json</code> in case the sheet becomes unavailable. Photos come from Wikimedia Commons under free licences, credited on each card.<br>
-    Created by Zeynep Canan Vural for LV 14141 <em>Digital Humanities and Data Sustainability</em>, Freie Universität Berlin. Code written with assistance from Claude (Anthropic).
+    Data is kept in a Google Sheet and loaded with <a href="https://opensheet.elk.sh">opensheet</a>; copies are stored in this repository as <code>data.json</code> and <code>stations.json</code>. Photos from Wikimedia Commons under free licences, credited on each card. Map data © OpenStreetMap contributors.<br>
+    Created by Zeynep Canan Vural for LV 14141 <em>Digital Humanities and Data Sustainability</em>, Freie Universität Berlin. Code written with assistance from Claude (Anthropic). <a href="about.html">Project notes</a>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Google Sheet ID (the long code in the sheet's URL). Leave empty to use only data.json.
+    // ---------- shared ----------
     const SHEET_ID = "1_zwzwG5XYYNoi80GaJrthII9lsUCWtG_BuXIvvAswxw";
     const SHEET_ENDPOINT = `https://opensheet.elk.sh/${SHEET_ID}/1`;
-    const FALLBACK = "data.json";
-
-    let objects = [];
-    let active = "All";
-
     const load = url => fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
     const slug = s => s.toLowerCase().replace(/[^a-z]+/g, "-");
+    const statusColor = s => s === "Return requested" ? "#8a1c1c" :
+      (s === "Returned" || s === "Return agreed" || s === "Ownership transferred") ? "#2e6b3a" : "#5a5a5a";
+    const isReturned = s => s === "Returned" || s === "Return agreed" || s === "Ownership transferred";
+    const palette = ["#e6194b", "#f58231", "#ffb000", "#3cb44b", "#00a6d6", "#4363d8", "#911eb4", "#f032e6", "#8b5a2b", "#000075"];
 
-    (SHEET_ID ? load(SHEET_ENDPOINT).catch(() => load(FALLBACK)) : load(FALLBACK))
-      .then(data => {
-        objects = data.filter(o => o.Title);
-        renderFilters();
-        renderGallery();
-      })
-      .catch(err => {
-        document.getElementById("gallery").innerHTML = "<p>Sorry, the data could not be loaded.</p>";
-        console.error(err);
+    // highlight the current section in the navigation
+    const navLinks = [...document.querySelectorAll(".nav nav a[href^='#']")];
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle("current", a.getAttribute("href") === "#" + e.target.id));
+    }), { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll("section.slide").forEach(s => io.observe(s));
+
+    // ---------- 2 · map ----------
+    const map = L.map("map", { worldCopyJump: true, scrollWheelZoom: false }).setView([25, 25], 3);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    // each object gets its own curve, alternating sides and growing wider, so routes do not overlap
+    const bendFor = i => (i % 2 ? -1 : 1) * (0.1 + 0.07 * Math.floor(i / 2));
+    function arc(a, b, bend) {
+      const pts = [], mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      const dx = b[1] - a[1], dy = b[0] - a[0], ctrl = [mid[0] + dx * bend, mid[1] - dy * bend];
+      for (let t = 0; t <= 1.0001; t += 0.05) { const u = 1 - t; pts.push([u*u*a[0] + 2*u*t*ctrl[0] + t*t*b[0], u*u*a[1] + 2*u*t*ctrl[1] + t*t*b[1]]); }
+      return pts;
+    }
+
+    Promise.all([load("data.json"), load("stations.json")]).then(([rows, stations]) => {
+      const layers = {}, all = [];
+      L.circleMarker([52.52, 13.40], { radius: 11, color: "#fff", weight: 3, fillColor: "#1f1f1f", fillOpacity: 1 })
+        .addTo(map).bindTooltip("Berlin", { permanent: true, direction: "right", offset: [10, 0] });
+
+      rows.forEach((o, i) => {
+        const c = palette[i % palette.length];
+        const st = stations.filter(s => s.ObjectID === o.ID).sort((a, b) => +a.Order - +b.Order);
+        const pts = st.map(s => [+s.Lat, +s.Lng]);
+        const path = [];
+        for (let k = 1; k < pts.length; k++) {
+          if (pts[k][0] === pts[k-1][0] && pts[k][1] === pts[k-1][1]) continue;
+          path.push(...arc(pts[k-1], pts[k], bendFor(i)));
+        }
+        const head = `<div class="popup"><img src="${o.Image}" alt="${o.Title}"><h3>${o.Title}</h3><span class="badge" style="background:${statusColor(o.Status)}">${o.Status}</span>`;
+        const link = `<p style="margin:0.5rem 0 0"><a href="object.html?id=${o.ID}">Read the object's biography →</a></p></div>`;
+        const line = L.polyline(path.length ? path : pts, { color: c, weight: 3.5, opacity: 0.9, dashArray: isReturned(o.Status) ? "8 8" : null })
+          .addTo(map).bindPopup(head + `<p style="margin:0.4rem 0 0;font-size:0.8rem">${st.length} stations in its life</p>` + link);
+        const groups = {};
+        st.forEach((s, k) => { const key = pts[k].join(","); (groups[key] = groups[key] || []).push(s); });
+        const dots = Object.values(groups).map(ss => L.circleMarker([+ss[0].Lat, +ss[0].Lng], { radius: 6, color: "#fff", weight: 2, fillColor: c, fillOpacity: 1 })
+          .addTo(map).bindTooltip(`${o.Title} · ${ss[0].Place}`)
+          .bindPopup(head + `<div class="route" style="margin-top:0.4rem">${ss[0].Place}</div>` +
+            ss.map(s => `<p style="margin:0.35rem 0;font-size:0.8rem;line-height:1.4"><b>${s.Year}</b>: ${s.Title}</p>`).join("") + link));
+        layers[o.ID] = { line, dots, pts };
+        all.push(...pts);
       });
 
+      const bar = document.getElementById("objectsbar");
+      // highlight one object and fade the others; fit = zoom to its route
+      const show = (id, fit = true) => {
+        Object.entries(layers).forEach(([k, l]) => {
+          const on = !id || k === id;
+          l.line.setStyle({ opacity: on ? 0.95 : 0.06, weight: id && on ? 5 : 3.5 });
+          l.dots.forEach(d => d.setStyle({ fillOpacity: on ? 1 : 0.06, opacity: on ? 1 : 0.06 }));
+          if (on && id) { l.line.bringToFront(); l.dots.forEach(d => d.bringToFront()); }
+        });
+        if (fit) map.fitBounds(L.latLngBounds(id ? layers[id].pts : all).pad(0.15));
+        bar.querySelectorAll("button").forEach(b => b.classList.toggle("active", (b.dataset.id || "") === (id || "")));
+      };
+      bar.innerHTML = `<button data-id="" class="active">All objects</button>` +
+        rows.map((o, i) => `<button data-id="${o.ID}"><span class="sw" style="background:${palette[i % palette.length]}"></span>${o.Title}</button>`).join("");
+      bar.querySelectorAll("button").forEach(b => b.onclick = () => show(b.dataset.id || null));
+      Object.entries(layers).forEach(([k, l]) => [l.line, ...l.dots].forEach(x => x.on("click", e => { L.DomEvent.stopPropagation(e); show(k, false); })));
+      map.on("click", () => show(null, false));
+      map.fitBounds(L.latLngBounds(all).pad(0.1));
+    });
+
+    // ---------- 3 · objects ----------
+    let objects = [], active = "All";
+    load(SHEET_ENDPOINT).catch(() => load("data.json"))
+      .then(data => {
+        // the Google Sheet drops leading zeros from IDs ("01" becomes "1"), so normalise them
+        objects = data.filter(o => o.Title).map(o => ({ ...o, ID: String(o.ID).padStart(2, "0") }));
+        renderFilters(); renderGallery();
+      })
+      .catch(err => { document.getElementById("gallery").innerHTML = "<p>Sorry, the data could not be loaded.</p>"; console.error(err); });
+
     function renderFilters() {
-      const statuses = ["All", ...new Set(objects.map(o => o.Status))];
       const box = document.getElementById("filters");
       box.innerHTML = "";
-      statuses.forEach(s => {
+      ["All", ...new Set(objects.map(o => o.Status))].forEach(s => {
         const b = document.createElement("button");
         b.textContent = s;
         if (s === active) b.className = "active";
@@ -96,7 +260,6 @@
         box.appendChild(b);
       });
     }
-
     function renderGallery() {
       const g = document.getElementById("gallery");
       g.innerHTML = "";

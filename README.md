@@ -8,9 +8,9 @@ A digital exhibition of ten objects held, or until recently held, in Berlin's mu
 
 | Page | Content |
 |---|---|
-| `index.html` | The exhibition: one card per object, filterable by restitution status |
+| `index.html` | One scrolling page in three parts: introduction, map of all journeys, and the object cards |
 | `object.html?id=01` … `?id=10` | Object biographies: origin story, timeline of the object's life and a route map |
-| `map.html` | All objects on one map, from their places of origin to Berlin |
+| `map.html` | Redirects to the map section of the main page |
 | `about.html` | Aims, approach, data model, image rights, sustainability and limitations |
 
 ## Data

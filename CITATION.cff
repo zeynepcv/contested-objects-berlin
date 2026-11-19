@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "Contested Objects: Provenance and Restitution in Berlin's Museums"
+authors:
+  - family-names: Vural
+    given-names: Zeynep Canan
+abstract: "A digital exhibition of ten objects held, or until recently held, in Berlin's museums whose presence there is disputed, presented as cultural biographies with an interactive map of their journeys."
+keywords:
+  - digital humanities
+  - provenance
+  - restitution
+  - museums
+  - Berlin
+license: CC-BY-4.0
+repository-code: "https://github.com/zeynepcv/contested-objects-berlin"
+url: "https://zeynepcv.github.io/contested-objects-berlin/"
+version: "1.0"
+date-released: "2026-11-19"

@@ -4,6 +4,8 @@ A digital exhibition of ten objects held, or until recently held, in Berlin's mu
 
 **Live site:** https://zeynepcv.github.io/contested-objects-berlin/
 
+**Archived on Zenodo:** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24373735.svg)](https://doi.org/10.5281/zenodo.24373735)
+
 ## Pages
 
 | Page | Content |
@@ -11,7 +13,7 @@ A digital exhibition of ten objects held, or until recently held, in Berlin's mu
 | `index.html` | One scrolling page in three parts: introduction, map of all journeys, and the object cards |
 | `object.html?id=01` … `?id=10` | Object biographies: origin story, timeline of the object's life and a route map |
 | `map.html` | Redirects to the map section of the main page |
-| `about.html` | Aims, approach, data model, image rights, sustainability and limitations |
+| `about.html` | Aims, approach, data model, data downloads and dictionary, image rights, sustainability, limitations and citation |
 
 ## Data
 
@@ -22,13 +24,21 @@ The project uses two linked tables:
 
 To add an object, add a row to the sheet and to `data.json`, then add its stations to `stations.json`.
 
+Both tables are also available as CSV files in [`data/`](data/) (`objects.csv`, `stations.csv`), which open in any spreadsheet program. A field-by-field data dictionary is on the [Project notes page](https://zeynepcv.github.io/contested-objects-berlin/about.html#data).
+
 ## Technology
 
 Plain HTML, CSS and JavaScript; [Leaflet](https://leafletjs.com) with [OpenStreetMap](https://www.openstreetmap.org) tiles for the maps; hosted on GitHub Pages. No server, database or build step.
 
 ## Sources and rights
 
-Facts are taken from openly accessible sources (mainly Wikipedia and its references, the Staatliche Museen zu Berlin and news reporting) and every timeline entry links to its source. All photographs come from Wikimedia Commons under public domain or Creative Commons licences and are credited on the pages. Texts and data by the author: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Facts are taken from openly accessible sources (mainly Wikipedia and its references, the Staatliche Museen zu Berlin and news reporting) and every timeline entry links to its source. All photographs come from Wikimedia Commons under public domain or Creative Commons licences and are credited on the pages. Texts and data by the author are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); see [`LICENSE`](LICENSE). Images keep the licences stated in their credit lines.
+
+## Archiving and citation
+
+Each GitHub release of this repository is archived automatically on [Zenodo](https://zenodo.org). The DOI [10.5281/zenodo.24373735](https://doi.org/10.5281/zenodo.24373735) always points to the latest version. Citation metadata is in [`CITATION.cff`](CITATION.cff).
+
+> Vural, Zeynep Canan. *Contested Objects: Provenance and Restitution in Berlin's Museums.* Digital exhibition, Freie Universität Berlin, 2026. Zenodo. https://doi.org/10.5281/zenodo.24373735
 
 ## Credits
 

@@ -22,13 +22,19 @@
     li { margin-bottom: 0.4rem; }
     code { font-size: 0.9em; background: #f4f1ec; padding: 0.05rem 0.3rem; }
     .refs li { font-size: 0.92rem; }
+    table.dict { width: 100%; border-collapse: collapse; margin: 1.2rem 0 1.6rem; font-size: 0.88rem; line-height: 1.5; }
+    table.dict caption { text-align: left; font-weight: bold; margin-bottom: 0.4rem; }
+    table.dict th, table.dict td { text-align: left; vertical-align: top; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); }
+    table.dict th { background: #f4f1ec; }
+    table.dict td:first-child { white-space: nowrap; }
+    @media (max-width: 520px) { table.dict td:first-child { white-space: normal; } }
     footer { font-size: 0.75rem; color: var(--muted); padding: 1.5rem max(16px, 4vw); border-top: 1px solid var(--line); line-height: 1.6; }
   </style>
 </head>
 <body>
   <div class="top">
     <a href="index.html"><img src="logo.png" alt="Contested Objects: Provenance and Restitution in Berlin's Museums"></a>
-    <nav><a href="index.html#intro">Introduction</a><a href="index.html#map-section">Map</a><a href="index.html#objects">Objects</a><a href="about.html" aria-current="page">Project notes</a></nav>
+    <nav><a href="index.html#intro">Introduction</a><a href="index.html#map-section">Map</a><a href="index.html#objects">Objects</a><a href="about.html" aria-current="page">Project notes</a><a href="#data">Data</a></nav>
   </div>
   <main>
     <h1>About this project</h1>
@@ -57,6 +63,51 @@
     <p>The object table is maintained in a Google Sheet and loaded into the exhibition page through <a href="https://opensheet.elk.sh">opensheet</a>, which turns the sheet into JSON. Editing a row in the sheet updates the website without changing any code. A copy of both tables is stored in the repository as <code>data.json</code> and <code>stations.json</code>, and the pages fall back to these files if the sheet cannot be reached. The maps are drawn with the open-source library <a href="https://leafletjs.com">Leaflet</a> on <a href="https://www.openstreetmap.org">OpenStreetMap</a> tiles.</p>
     <p>Facts were collected from openly accessible sources, mainly Wikipedia articles and their references, the provenance pages of the Staatliche Museen zu Berlin, and news reporting on restitution cases. Every station on every object page links to its source.</p>
 
+    <h2 id="data">Data and downloads</h2>
+    <p>Both tables can be downloaded and reused under a CC BY 4.0 licence. The CSV files open in any spreadsheet program; the JSON files are the copies the website itself reads.</p>
+    <ul>
+      <li><strong>Objects</strong> (10 rows): <a href="data/objects.csv" download>objects.csv</a> · <a href="data.json" download>data.json</a></li>
+      <li><strong>Stations</strong> (67 rows): <a href="data/stations.csv" download>stations.csv</a> · <a href="stations.json" download>stations.json</a></li>
+    </ul>
+    <p>The live version of the object table is the public Google Sheet; the files in the repository are snapshots of it. All values are stored as text. Coordinates are decimal degrees (WGS 84). Dates are given as they appear in the sources, for example <code>c. 575 BCE</code>, <code>1913–1924</code> or <code>Today</code>, so that uncertain dates are not given false precision.</p>
+
+    <table class="dict">
+      <caption>Objects table</caption>
+      <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>ID</code></td><td>Two-digit identifier (01–10); links the object to its stations</td></tr>
+        <tr><td><code>Title</code></td><td>Common name of the object</td></tr>
+        <tr><td><code>Origin</code></td><td>Place or culture where the object was made</td></tr>
+        <tr><td><code>Country</code></td><td>Present-day country of origin</td></tr>
+        <tr><td><code>Made</code></td><td>Date or period of making</td></tr>
+        <tr><td><code>Museum</code></td><td>Berlin museum that holds or held the object</td></tr>
+        <tr><td><code>Arrived</code></td><td>When the object reached Berlin</td></tr>
+        <tr><td><code>How</code></td><td>How it reached Berlin: <em>Excavation</em>, <em>Diplomatic gift</em>, <em>Colonial expedition</em>, <em>Colonial acquisition</em> or <em>Colonial looting</em></td></tr>
+        <tr><td><code>Status</code></td><td>Restitution status: <em>Return requested</em>, <em>Contested provenance</em>, <em>No formal claim</em>, <em>Return agreed</em>, <em>Ownership transferred</em> or <em>Returned</em></td></tr>
+        <tr><td><code>Description</code></td><td>Short summary of the object and its case</td></tr>
+        <tr><td><code>Story</code></td><td>Longer text about the object's place of origin and meaning there</td></tr>
+        <tr><td><code>Image</code>, <code>Credit</code>, <code>CreditLink</code></td><td>Wikimedia Commons image, its photographer and licence, and its file page</td></tr>
+        <tr><td><code>Source</code>, <code>Link</code></td><td>Main source for the object and its URL</td></tr>
+        <tr><td><code>OriginLat</code>, <code>OriginLng</code></td><td>Coordinates of the place of origin</td></tr>
+        <tr><td><code>BerlinLat</code>, <code>BerlinLng</code></td><td>Coordinates of the museum in Berlin</td></tr>
+      </tbody>
+    </table>
+
+    <table class="dict">
+      <caption>Stations table</caption>
+      <thead><tr><th>Field</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>ObjectID</code></td><td>The <code>ID</code> of the object this station belongs to</td></tr>
+        <tr><td><code>Year</code></td><td>Date of the event</td></tr>
+        <tr><td><code>Order</code></td><td>Position of the station in the object's timeline</td></tr>
+        <tr><td><code>Title</code></td><td>Short heading for the event</td></tr>
+        <tr><td><code>Place</code></td><td>Place where the event happened</td></tr>
+        <tr><td><code>Lat</code>, <code>Lng</code></td><td>Coordinates of that place</td></tr>
+        <tr><td><code>Text</code></td><td>One or two sentences describing the event</td></tr>
+        <tr><td><code>Source</code>, <code>Link</code></td><td>Source for the event and its URL</td></tr>
+      </tbody>
+    </table>
+
     <h2>Images and rights</h2>
     <p>All photographs come from Wikimedia Commons and are in the public domain or under Creative Commons licences. Each image is credited with its photographer and licence on the page where it appears. Press and museum photographs were deliberately not used, because the project should be freely shareable and should not depend on permissions that can expire.</p>
 
@@ -65,9 +116,14 @@
     <ul>
       <li>It is a <strong>static website</strong> of plain HTML, CSS and JavaScript, with no server, database or login to maintain.</li>
       <li>It is hosted free of charge on <strong>GitHub Pages</strong>, and the full source code and data are public in the repository, so anyone can copy, archive or continue the project.</li>
-      <li>The data is kept in <strong>open, simple formats</strong> (a spreadsheet, CSV and JSON) that can be read without special software.</li>
+      <li>The data is kept in <strong>open, simple formats</strong> (a spreadsheet, CSV and JSON) that can be read without special software, and is documented field by field in the <a href="#data">data dictionary</a> above.</li>
+      <li>Every release of the repository is archived on <strong>Zenodo</strong>, an open research repository run by CERN, under a permanent identifier (DOI). If GitHub or this website disappears, the archived copy remains citable and downloadable.</li>
+      <li>Texts and data are published under an <strong>open licence</strong> (CC BY 4.0), stated in the repository's <code>LICENSE</code> file, so that they can legally be copied, archived and reused.</li>
       <li>The site depends on only two external services, the Google Sheet and the map tiles, and keeps working without the first through its local data files.</li>
     </ul>
+
+    <h2>How to cite</h2>
+    <p>Vural, Zeynep Canan. <em>Contested Objects: Provenance and Restitution in Berlin's Museums.</em> Digital exhibition, Freie Universität Berlin, 2026. Zenodo. <a href="https://doi.org/10.5281/zenodo.24373735">https://doi.org/10.5281/zenodo.24373735</a></p>
 
     <h2>Limitations</h2>
     <p>This is a proof of concept, not a complete record. The selection is small and centred on Berlin. Most of the sources are in European languages and many are secondary, so the perspectives of the communities these objects come from are present mainly through the restitution claims they have made. Restitution cases change quickly; the information reflects the state of the sources in October 2026.</p>

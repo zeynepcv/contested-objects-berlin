@@ -14,5 +14,6 @@ keywords:
 license: CC-BY-4.0
 repository-code: "https://github.com/zeynepcv/contested-objects-berlin"
 url: "https://zeynepcv.github.io/contested-objects-berlin/"
-version: "1.0"
+doi: "10.5281/zenodo.24373735"
+version: "1.1"
 date-released: "2026-11-19"

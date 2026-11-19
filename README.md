@@ -24,7 +24,7 @@ The project uses two linked tables:
 
 To add an object, add a row to the sheet and to `data.json`, then add its stations to `stations.json`.
 
-Both tables are also available as CSV files in [`data/`](data/) (`objects.csv`, `stations.csv`), which open in any spreadsheet program. A field-by-field data dictionary is on the [Project notes page](https://zeynepcv.github.io/contested-objects-berlin/about.html#data).
+Both tables are also available as CSV files, [`objects.csv`](objects.csv) and [`stations.csv`](stations.csv), which open in any spreadsheet program. A field-by-field data dictionary is on the [Project notes page](https://zeynepcv.github.io/contested-objects-berlin/about.html#data).
 
 ## Technology
 
